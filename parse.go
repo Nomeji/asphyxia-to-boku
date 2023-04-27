@@ -124,8 +124,8 @@ func (m Medal) Lamp() string {
 	}
 }
 
-func parseScores(asphyxiaDbPath string) []score {
-	file, err := os.Open(asphyxiaDbPath)
+func parseScores() []score {
+	file, err := os.Open(*asphyxiaDbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,16 +149,9 @@ func parseScores(asphyxiaDbPath string) []score {
 
 	for i := 0; i < len(asphyxiaDatas); i++ {
 		if asphyxiaDatas[i]["collection"] == "scores" {
-			fmt.Printf("Import scores for %v? [Y/n] ", asphyxiaDatas[i]["__refid"])
+			currentRefID := asphyxiaDatas[i]["__refid"].(string)
 
-			reader := bufio.NewReader(os.Stdin)
-			text, err := reader.ReadString('\n')
-			if err != nil {
-				log.Fatalln(err)
-			}
-			text = strings.TrimSpace(text)
-
-			if !(text == "y" || text == "Y" || text == "") {
+			if !confirmRefID(currentRefID) {
 				continue
 			}
 
@@ -175,18 +168,26 @@ func parseScores(asphyxiaDbPath string) []score {
 					log.Fatalln(err)
 				}
 				difficulty := Difficulity(difficulityIndex).String()
+				// Difficulty unknown probably means battle mode (needs confirmation)
 				if difficulty == "unknown" {
 					continue
 				}
 
-				medal := Medal(int(scoreMap["clear_type"].(float64)))
+				clearType := scoreMap["clear_type"]
+				// Player exited before end of song: no medal
+				if clearType == nil {
+					continue
+				}
+				clearTypeFloat := clearType.(float64)
+				// clear_types in unilab are *100?
+				if clearTypeFloat >= 100 {
+					clearTypeFloat = clearTypeFloat / 100
+				}
+				medal := Medal(int(clearTypeFloat))
 				clearMedal := medal.String()
 
-				// grade := Grade(int(scoreMap["clear_rank"].(float64))).String()
-
 				var score = score{
-					Score: uint(scoreNb),
-					// Grade:        grade,
+					Score:        uint(scoreNb),
 					ClearMedal:   clearMedal,
 					Difficulity:  difficulty,
 					MatchType:    "inGameID",
@@ -200,4 +201,21 @@ func parseScores(asphyxiaDbPath string) []score {
 	}
 
 	return scores
+}
+
+func confirmRefID(currentRefID string) bool {
+	if *cardID != "" {
+		return *cardID == currentRefID
+	}
+
+	fmt.Printf("Import scores for %v? [Y/n] ", currentRefID)
+
+	reader := bufio.NewReader(os.Stdin)
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalln(err)
+	}
+	text = strings.TrimSpace(text)
+
+	return text == "y" || text == "Y" || text == ""
 }

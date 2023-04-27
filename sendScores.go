@@ -35,8 +35,8 @@ type batchManual struct {
 	Scores []score `json:"scores"`
 }
 
-func buildBatchManual(asphyxiaDbPath string) batchManual {
-	scores := parseScores(asphyxiaDbPath)
+func buildBatchManual() batchManual {
+	scores := parseScores()
 
 	return batchManual{
 		Meta: meta{
@@ -48,8 +48,8 @@ func buildBatchManual(asphyxiaDbPath string) batchManual {
 	}
 }
 
-func sendScores(c *config, asphyxiaDbPath string) {
-	batchManual := buildBatchManual(asphyxiaDbPath)
+func sendScores(c *config) {
+	batchManual := buildBatchManual()
 
 	if len(batchManual.Scores) == 0 {
 		fmt.Println("Nothing to import exiting")
