@@ -1,3 +1,3 @@
-module github.com/nomeji/aspyxia-exporter
+module github.com/Nomeji/asphyxia-to-boku
 
 go 1.19

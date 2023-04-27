@@ -1,0 +1,19 @@
+name: Build asphyxia-to-boku
+run-name: Building asphyxia-to-boku
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt install golang
+      - uses: actions/checkout@v3
+      - run: go build .
+      - run: GOOS=windows GOARCH=amd64 go build -o asphyxia-to-boku.exe .
+      - uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          title: "Build"
+          files: |
+            asphyxia-to-boku
+            asphyxia-to-boku.exe
