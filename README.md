@@ -4,8 +4,8 @@ Import your popn scores from [Asphyxia CORE](https://asphyxia-core.github.io/) t
 
 1. Download:
 
-* Windows
-* Linux
+* [Windows](https://github.com/Nomeji/asphyxia-to-boku/releases/download/latest/asphyxia-to-boku.exe)
+* [Linux](https://github.com/Nomeji/asphyxia-to-boku/releases/download/latest/asphyxia-to-boku)
 
 2. Retreive your Asphyxia database file (popn:db) from you asphyxia folder
 
